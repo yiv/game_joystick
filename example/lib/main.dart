@@ -5,17 +5,21 @@ void main() {
   runApp(TestApp());
 }
 
-
 class TestApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Center(child: Container(
-            color: Colors.grey,
-            width: 200,
-            height: 200,
-            child: Joystick(lineColor: Colors.black, lineWidth: 5, verticalController: true, horizontalController: true,))),
+        body: Center(
+            child: Container(
+                width: 300,
+                height: 300,
+                child: Joystick(
+                  lineColor: Colors.black,
+                  lineWidth: 10,
+                  verticalController: true,
+                  horizontalController: true,
+                ))),
       ),
     );
   }

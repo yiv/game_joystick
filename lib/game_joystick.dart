@@ -31,63 +31,109 @@ class Joystick extends StatefulWidget {
 class _JoystickState extends State<Joystick> {
   double _top;
   double _left;
+  double _outlineRadius;
+  double _controllerRadius;
+  double _padding;
+  double _zeroX;
+  double _zeroY;
 
   @override
   Widget build(BuildContext context) {
-    print('edwin 35# ${cos(30)}');
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
+      _padding = 0;
+      _controllerRadius = constraints.maxWidth / 8;
+      _outlineRadius = constraints.maxWidth / 2;
+      _zeroX = _outlineRadius - _controllerRadius - _padding;
+      _zeroY = _outlineRadius - _controllerRadius - _padding;
       return GestureDetector(
-        // onTap: (){
-        //   print('hello tap');
-        // },
         onPanEnd: (DragEndDetails details) {
           // print('onPanCancel');
           if (widget.verticalControllerBackToCenter) {
             setState(() {
-              _left = constraints.maxWidth / 2 -
-                  constraints.maxWidth / 8 -
-                  widget.lineWidth / 2;
+              _left = _zeroX;
             });
           }
           if (widget.horizontalControllerBackToCenter) {
             setState(() {
-              _top = constraints.maxWidth / 2 -
-                  constraints.maxWidth / 8 -
-                  widget.lineWidth / 2;
+              _top = _zeroY;
             });
           }
         },
         onPanUpdate: (DragUpdateDetails details) {
-          double newTop = details.localPosition.dy - constraints.maxWidth / 8;
-          double newLeft = details.localPosition.dx - constraints.maxWidth / 8;
-          if (_left != null || _top != null) {
-            if (widget.horizontalControllerFixed) {
-              newTop = constraints.maxWidth / 2 -
-                  constraints.maxWidth / 8 -
-                  widget.lineWidth / 2;
+          final _dx = details.localPosition.dx - _outlineRadius - _padding;
+          final _dy = details.localPosition.dy - _outlineRadius - _padding;
+          final _positionRadius = sqrt(pow(_dx, 2) + pow(_dy, 2));
+
+          if (_positionRadius > (_outlineRadius - _controllerRadius)) {
+          // if (false) {
+            final _tangent = _dy.abs() / _dx.abs();
+            _left = sqrt(pow(_outlineRadius - _controllerRadius, 2) /
+                (pow(_tangent, 2) + 1));
+
+            _top = sqrt(pow(_outlineRadius - _controllerRadius, 2) -
+                pow(_outlineRadius - _controllerRadius, 2) /
+                    (pow(_tangent, 2) + 1));
+
+            if (_dy < 0) {
+              _top = -_top - _padding;
+            } else {
+              _top -= _padding;
             }
-            if (widget.verticalControllerFixed) {
-              newLeft = constraints.maxWidth / 2 -
-                  constraints.maxWidth / 8 -
-                  widget.lineWidth / 2;
+            if (_dx < 0) {
+              _left = -_left - _padding;
+            } else {
+              _left -= _padding;
             }
+            _top = _top + _outlineRadius - _controllerRadius;
+            _left = _left + _outlineRadius - _controllerRadius;
+
+            print(
+                'setState#1 dx=$_dx, dy=$_dy, _left=$_left, _top=$_top, _positionRadius=$_positionRadius, _outlineRadius=$_outlineRadius');
+          } else {
+            _top = details.localPosition.dy - _controllerRadius - _padding;
+
+            _left = details.localPosition.dx - _controllerRadius - _padding;
+
+            print(
+                'setState#2 dx=$_dx, dy=$_dy, _left=$_left, _top=$_top, _positionRadius=$_positionRadius, _outlineRadius=$_outlineRadius');
           }
+
+          if (widget.horizontalControllerFixed) {
+            _top = _zeroY;
+          }
+          if (widget.verticalControllerFixed) {
+            _left = _zeroX;
+          }
+
+          // if (_left != null || _top != null) {
+          //   if (widget.horizontalControllerFixed) {
+          //     _top = _zeroY;
+          //   }
+          //   if (widget.verticalControllerFixed) {
+          //     _left = _zeroX;
+          //   }
+          //   print(
+          //       'setState#3 dx=$_dx, dy=$_dy, _left=$_left, _top=$_top, _positionRadius=$_positionRadius, _outlineRadius=$_outlineRadius');
+          // }
+
           setState(() {
-            _top = newTop;
-            _left = newLeft;
-            // print('setState _top=$_top, _left=$_left');
+            _top = _top;
+            _left = _left;
           });
+
           // print(
-          //     'DragUpdateDetails position=${details.localPosition}, x=${details.localPosition.dx}, y=${details.localPosition.dy}, width=${constraints.maxWidth}, newTop=$newTop, newLeft=$newLeft');
+          //     'setState _outlineRadius=$_outlineRadius, _controllerRadius=$_controllerRadius, _padding=$_padding, _zeroX=$_zeroX, _zeroY$_zeroY');
+          // print(
+          //     'DragUpdateDetails position=${details.localPosition}, x=${details.localPosition.dx}, y=${details.localPosition.dy}, width=${constraints.maxWidth}');
         },
         child: Container(
-          padding: EdgeInsets.all(widget.lineWidth / 2),
-          color: Colors.yellow,
           child: Stack(alignment: Alignment.center, children: [
+            JoystickOutline(
+                lineColor: widget.lineColor, lineWidth: widget.lineWidth),
             widget.verticalController
                 ? Container(
-                    color: Colors.pink,
+                    // color: Colors.pink,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -107,7 +153,7 @@ class _JoystickState extends State<Joystick> {
                 : Container(),
             widget.horizontalController
                 ? Container(
-                    color: Colors.green,
+                    // color: Colors.green,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -125,17 +171,14 @@ class _JoystickState extends State<Joystick> {
                     ),
                   )
                 : Container(),
-            JoystickOutline(
-                lineColor: widget.lineColor, lineWidth: widget.lineWidth),
             Positioned(
               top: _top,
               left: _left,
-              child: Container(
-                child: Icon(
-                  Icons.circle,
-                  size: constraints.maxWidth / 4,
-                  color: widget.lineColor,
-                ),
+              child: Icon(
+                Icons.circle,
+                size: constraints.maxWidth / 4,
+                color: widget.lineColor,
+                // color: Colors.purple,
               ),
             ),
           ]),
