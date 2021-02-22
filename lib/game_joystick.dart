@@ -12,8 +12,6 @@ class Joystick extends StatefulWidget {
   final Color lineColor;
   final bool horizontalController;
   final bool verticalController;
-  final bool horizontalControllerFixed;
-  final bool verticalControllerFixed;
   final bool horizontalControllerBackToCenter;
   final bool verticalControllerBackToCenter;
 
@@ -22,8 +20,6 @@ class Joystick extends StatefulWidget {
       this.lineColor,
       this.horizontalController = true,
       this.verticalController = true,
-      this.horizontalControllerFixed = false,
-      this.verticalControllerFixed = false,
       this.horizontalControllerBackToCenter = true,
       this.verticalControllerBackToCenter = true});
 }
@@ -99,10 +95,10 @@ class _JoystickState extends State<Joystick> {
                 'setState#2 dx=$_dx, dy=$_dy, _left=$_left, _top=$_top, _positionRadius=$_positionRadius, _outlineRadius=$_outlineRadius');
           }
 
-          if (widget.horizontalControllerFixed) {
+          if (!widget.verticalController) {
             _top = _zeroY;
           }
-          if (widget.verticalControllerFixed) {
+          if (!widget.horizontalController) {
             _left = _zeroX;
           }
 
