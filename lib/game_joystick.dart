@@ -16,7 +16,7 @@ class Joystick extends StatefulWidget {
   final bool verticalController;
   final bool horizontalControllerBackToCenter;
   final bool verticalControllerBackToCenter;
-  final OnChangedCallback onChangedCallback;
+  final OnChangedCallback onChanged;
 
   Joystick(
       {this.lineWidth,
@@ -25,7 +25,7 @@ class Joystick extends StatefulWidget {
       this.verticalController = true,
       this.horizontalControllerBackToCenter = true,
       this.verticalControllerBackToCenter = true,
-      this.onChangedCallback});
+      this.onChanged});
 }
 
 class _JoystickState extends State<Joystick> {
@@ -61,7 +61,7 @@ class _JoystickState extends State<Joystick> {
               _top = _zeroY;
             });
           }
-          widget.onChangedCallback(_dx, _dy);
+          if (widget.onChanged != null) widget.onChanged(_dx, _dy);
         },
         onPanUpdate: (DragUpdateDetails details) {
           _dx = details.localPosition.dx - _outlineRadius;
@@ -70,18 +70,19 @@ class _JoystickState extends State<Joystick> {
           double _cx = _dx;
           double _cy = _dy;
 
-          if (_cx > 0 ){
-            _cx = _cx.abs() > _outlineRadius? _outlineRadius: _cx;
-          }else{
-            _cx = _cx.abs() > _outlineRadius? -_outlineRadius: _cx;
+          if (_cx > 0) {
+            _cx = _cx.abs() > _outlineRadius ? _outlineRadius : _cx;
+          } else {
+            _cx = _cx.abs() > _outlineRadius ? -_outlineRadius : _cx;
           }
-          if (_cy > 0 ){
-            _cy = _cy.abs() > _outlineRadius? _outlineRadius: _cy;
-          }else{
-            _cy = _cy.abs() > _outlineRadius? -_outlineRadius: _cy;
+          if (_cy > 0) {
+            _cy = _cy.abs() > _outlineRadius ? _outlineRadius : _cy;
+          } else {
+            _cy = _cy.abs() > _outlineRadius ? -_outlineRadius : _cy;
           }
 
-          widget.onChangedCallback(_cx/_outlineRadius, _cy/_outlineRadius);
+          if (widget.onChanged != null)
+            widget.onChanged(_cx / _outlineRadius, _cy / _outlineRadius);
 
           final _positionRadius = sqrt(pow(_dx, 2) + pow(_dy, 2));
 
@@ -116,19 +117,8 @@ class _JoystickState extends State<Joystick> {
             _left = _zeroX;
           }
 
-          // if (_left != null || _top != null) {
-          //   if (widget.horizontalControllerFixed) {
-          //     _top = _zeroY;
-          //   }
-          //   if (widget.verticalControllerFixed) {
-          //     _left = _zeroX;
-          //   }
-          //   print(
-          //       'setState#3 dx=$_dx, dy=$_dy, _left=$_left, _top=$_top, _positionRadius=$_positionRadius, _outlineRadius=$_outlineRadius');
-          // }
-
-          print(
-              'setState#2 localPosition=${details.localPosition}  dx=$_dx, dy=$_dy, _left=$_left, _top=$_top, _positionRadius=$_positionRadius, _outlineRadius=$_outlineRadius');
+          // print(
+          //     'setState#2 localPosition=${details.localPosition}  dx=$_dx, dy=$_dy, _left=$_left, _top=$_top, _positionRadius=$_positionRadius, _outlineRadius=$_outlineRadius');
 
           setState(() {
             _top = _top;
@@ -141,7 +131,7 @@ class _JoystickState extends State<Joystick> {
           //     'DragUpdateDetails position=${details.localPosition}, x=${details.localPosition.dx}, y=${details.localPosition.dy}, width=${constraints.maxWidth}');
         },
         child: Container(
-          color: Colors.brown,
+          // color: Colors.brown,
           child: Stack(alignment: Alignment.center, children: [
             JoystickOutline(
                 lineColor: widget.lineColor, lineWidth: widget.lineWidth),
@@ -189,7 +179,7 @@ class _JoystickState extends State<Joystick> {
               top: _top,
               left: _left,
               child: Container(
-                color: Colors.blue,
+                // color: Colors.blue,
                 child: Icon(
                   Icons.circle,
                   size: constraints.maxWidth / 4,
