@@ -19,9 +19,9 @@ class TestApp extends StatelessWidget {
                   lineWidth: 10,
                   verticalController: true,
                   horizontalController: true,
-                  // onChanged: (x, y){
-                  //   print("onChangedCallback $x - $y");
-                  // },
+                  onChanged: (x, y){
+                    print("onChangedCallback $x - $y");
+                  },
                 ))),
       ),
     );
